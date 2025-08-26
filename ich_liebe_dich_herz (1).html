@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Für dich ❤️</title>
+  <meta name="description" content="Eine kleine Liebeserklärung mit animiertem Herz.">
+  <style>
+    :root{
+      --bg1:#0f2027; --bg2:#203a43; --bg3:#2c5364;
+      --text:#ffffff; --sub:#e2e8f0;
+      --pink1:#ff4d6d; --pink2:#ff758f;
+      --glow: rgba(255, 105, 135, .5);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji", "Segoe UI Symbol";
+      color:var(--text);
+      background: linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
+      overflow:hidden;
+    }
+    .wrap{
+      min-height:100%;
+      display:grid;
+      place-items:center;
+      text-align:center;
+      padding: clamp(16px, 4vw, 40px);
+      gap: 18px;
+    }
+    .card{
+      backdrop-filter: blur(6px) saturate(120%);
+      -webkit-backdrop-filter: blur(6px) saturate(120%);
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 22px;
+      padding: clamp(18px,4vw,28px);
+      box-shadow: 0 10px 40px rgba(0,0,0,.25);
+    }
+    /* CSS Heart */
+    .heart{
+      width: 140px; height: 140px;
+      position: relative;
+      transform: rotate(-45deg);
+      background: linear-gradient(45deg, var(--pink1), var(--pink2));
+      border-radius: 16px;
+      box-shadow: 0 18px 45px var(--glow);
+      animation: beat 1.2s ease-in-out infinite;
+      margin: 6px auto 10px;
+    }
+    .heart::before,
+    .heart::after{
+      content:"";
+      position:absolute;
+      width:140px; height:140px;
+      background: inherit;
+      border-radius:50%;
+    }
+    .heart::before{ top:-70px; left:0; }
+    .heart::after{ left:70px; top:0; }
+
+    @keyframes beat{
+      0%,100%{ transform: rotate(-45deg) scale(1); }
+      25%{ transform: rotate(-45deg) scale(1.06); }
+      50%{ transform: rotate(-45deg) scale(0.98); }
+      75%{ transform: rotate(-45deg) scale(1.06); }
+    }
+
+    h1{
+      font-weight:800;
+      font-size: clamp(28px, 6vw, 44px);
+      line-height:1.1;
+      margin: 0;
+      text-shadow: 0 6px 30px rgba(0,0,0,.35);
+      letter-spacing: .3px;
+      filter: drop-shadow(0 10px 18px rgba(255,105,135,.25));
+      opacity: 0; transform: translateY(8px);
+      animation: fadeUp .9s .35s ease-out forwards;
+    }
+    .sub{
+      font-size: clamp(14px, 2.4vw, 16px);
+      color: var(--sub);
+      opacity:.9;
+      margin:0;
+      opacity: 0; transform: translateY(8px);
+      animation: fadeUp .9s .55s ease-out forwards;
+    }
+    @keyframes fadeUp{
+      to{opacity:1; transform:none;}
+    }
+
+    /* Floating hearts */
+    .floater{
+      position: fixed;
+      bottom: -40px;
+      left: 0;
+      user-select:none;
+      pointer-events:none;
+      animation: rise linear forwards;
+      will-change: transform, opacity;
+      filter: drop-shadow(0 6px 10px rgba(255,105,135,.35));
+    }
+    @keyframes rise{
+      0%{ transform: translateY(0) scale(1) rotate(0deg); opacity:0; }
+      10%{ opacity:1; }
+      100%{ transform: translateY(-110vh) scale(1.4) rotate(360deg); opacity:0; }
+    }
+
+    .hint{
+      font-size: 12px;
+      opacity:.7;
+      margin-top: 8px;
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      *, *::before, *::after{
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+      .hint{display:none;}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="heart" aria-hidden="true"></div>
+      <h1 id="message" aria-live="polite">Ich liebe dich!</h1>
+      <p class="sub">Für dich, weil du mein Herz schneller schlagen lässt. 💖</p>
+      <p class="hint">Tipp: Tippe/Klicke für mehr Herzen</p>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const msgEl = document.getElementById('message');
+      // Personalisiere über ?name=DeinName
+      const params = new URLSearchParams(location.search);
+      const name = (params.get('name') || "").trim();
+      if(name){
+        msgEl.textContent = `Ich liebe dich, ${name}!`;
+      }
+
+      // Erzeuge aufsteigende Herz-Emojis
+      function makeHeart(){
+        const s = document.createElement('span');
+        s.className = 'floater';
+        s.textContent = Math.random() > 0.3 ? '❤' : '💕';
+        s.style.left = Math.random()*100 + 'vw';
+        s.style.animationDuration = (6 + Math.random()*5).toFixed(2) + 's';
+        s.style.fontSize = (16 + Math.random()*40).toFixed(0) + 'px';
+        document.body.appendChild(s);
+        // Entferne nach Animation
+        s.addEventListener('animationend', () => s.remove());
+      }
+
+      // Startregen
+      for(let i=0;i<18;i++){
+        setTimeout(makeHeart, i*180);
+      }
+      // Mehr Herzen bei Klick/Touch
+      ['click','touchstart'].forEach(evt => {
+        document.addEventListener(evt, () => {
+          for(let i=0;i<10;i++){
+            setTimeout(makeHeart, i*100);
+          }
+        }, {passive:true});
+      });
+    })();
+  </script>
+</body>
+</html>
